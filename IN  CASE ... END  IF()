@@ -1,0 +1,137 @@
+    IN
+
+    CASE ... END
+
+    IF()
+
+This is specially written for future reference — feel free to bookmark or save it. 💡
+📝 SQL Notes: IN, CASE ... END, IF() — Explained in 100x Detail
+🔹 1. IN — Used for Matching Multiple Values
+✅ Syntax:
+
+column_name IN (value1, value2, value3, ...)
+
+✅ What it means:
+
+    It's like asking “Is this value among the list?”
+
+🧠 Example:
+
+SELECT * FROM Students
+WHERE grade IN ('A', 'B', 'C');
+
+🔍 What it does:
+
+    It checks the grade column.
+
+    If the value is either 'A', 'B', or 'C', the row is returned.
+
+    It’s shorter and cleaner than writing:
+
+    grade = 'A' OR grade = 'B' OR grade = 'C'
+
+✅ Real-Life Analogy:
+
+    Imagine you're allowed to enter the club only if your name is on the list:
+    IN ('Shani', 'Ravi', 'Neha') means only these people can enter.
+    If your name is in the list → ✅ Yes
+    If not → ❌ No
+
+🔹 2. CASE ... END — SQL's If-Else Logic (Multi-Condition)
+✅ Syntax:
+
+CASE 
+    WHEN condition1 THEN result1
+    WHEN condition2 THEN result2
+    ELSE default_result
+END
+
+✅ What it means:
+
+    It’s like an if-else if-else ladder in other languages.
+    You check conditions in order, and return a result when the first one is true.
+
+🧠 Example:
+
+SELECT name,
+       CASE 
+           WHEN marks >= 90 THEN 'Excellent'
+           WHEN marks >= 75 THEN 'Good'
+           WHEN marks >= 50 THEN 'Average'
+           ELSE 'Poor'
+       END AS performance
+FROM Students;
+
+🔍 What it does:
+
+    For each student:
+
+        If marks ≥ 90 → show “Excellent”
+
+        Else if ≥ 75 → “Good”
+
+        Else if ≥ 50 → “Average”
+
+        Else → “Poor”
+
+✅ Real-Life Analogy:
+
+    Think of a result card.
+    The marks are passed through multiple checks.
+    Based on score, you assign a label.
+    It’s like grading students using conditions.
+
+✅ Notes:
+
+    CASE always ends with END
+
+    You can use it in SELECT, WHERE, ORDER BY, etc.
+
+🔹 3. IF() — Shortcut for Simple Condition
+✅ Syntax:
+
+IF(condition, value_if_true, value_if_false)
+
+✅ What it means:
+
+    It’s like a simple if-else — only one condition, two results.
+
+🧠 Example:
+
+SELECT name,
+       IF(age >= 18, 'Adult', 'Minor') AS age_group
+FROM People;
+
+🔍 What it does:
+
+    If age ≥ 18 → show “Adult”
+
+    Otherwise → show “Minor”
+
+✅ Real-Life Analogy:
+
+    Imagine someone checks your age at the counter:
+
+        If you’re 18 or older → You can enter
+
+        Otherwise → Not allowed
+        That’s IF(condition, yes, no).
+
+🔄 CASE vs IF()
+Feature	IF()	CASE
+Simple check	One condition	Multiple conditions
+Readability	Easy for 1 condition	Better for complex logic
+Flexibility	Limited to 2 outcomes	Unlimited WHEN ... THEN branches
+Syntax	IF(cond, true, false)	Full CASE WHEN ... THEN ... ELSE END
+✅ Summary Table (Cheat Sheet)
+Keyword	Purpose	Example	Result
+IN	Match against multiple values	WHERE status IN ('yes','maybe')	Checks if value is in a list
+CASE	Multi-condition logic (if-else if-else)	CASE WHEN age>18 THEN ...	Returns first matched result
+IF()	Simple condition check (if-else)	IF(score>50, 'Pass', 'Fail')	Returns one of two values
+💬 In Simple Words:
+
+    ✅ Use IN when you want to match from a list.
+
+    ✅ Use IF() when you have 1 condition, 2 outcomes.
+
+    ✅ Use CASE when you have more than one condition to check.
