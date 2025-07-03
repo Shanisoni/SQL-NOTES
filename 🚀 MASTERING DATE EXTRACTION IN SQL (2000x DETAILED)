@@ -1,0 +1,146 @@
+
+🧾 Step 1: Sample Table – Transactions
+
+Let's create a real-world dataset called Transactions used in fintech or e-commerce analytics.
+
+CREATE TABLE Transactions (
+    id INT,
+    country VARCHAR(20),
+    state ENUM('approved', 'declined'),
+    amount INT,
+    trans_date DATE
+);
+
+-- Sample data insertions:
+INSERT INTO Transactions (id, country, state, amount, trans_date) VALUES
+(101, 'US', 'approved', 1000, '2023-01-15'),
+(102, 'US', 'declined', 500, '2023-01-20'),
+(103, 'IN', 'approved', 3000, '2023-02-10'),
+(104, 'IN', 'approved', 4000, '2023-02-11'),
+(105, 'IN', 'declined', 1000, '2023-03-01'),
+(106, 'DE', 'approved', 700, '2023-03-03'),
+(107, 'DE', 'declined', 900, '2023-03-20'),
+(108, 'US', 'approved', 1200, '2023-04-01');
+
+📆 Step 2: Core Date Functions (with Output)
+🔹 1. YEAR(date_column)
+
+SELECT id, trans_date, YEAR(trans_date) AS txn_year
+FROM Transactions;
+
+📤 Output:
+id	trans_date	txn_year
+101	2023-01-15	2023
+108	2023-04-01	2023
+
+✅ Useful for year-wise aggregation or filtering.
+🔹 2. MONTH(trans_date) and DAY(trans_date)
+
+SELECT id, trans_date, MONTH(trans_date) AS txn_month, DAY(trans_date) AS txn_day
+FROM Transactions;
+
+📤 Output:
+id	trans_date	txn_month	txn_day
+103	2023-02-10	2	10
+104	2023-02-11	2	11
+
+✅ Used for monthly trend, billing cycles, or seasonal sales.
+🔹 3. DATE_FORMAT() – The Powerhouse 🔥
+
+SELECT id, trans_date, DATE_FORMAT(trans_date, '%Y-%m') AS month_key
+FROM Transactions;
+
+📤 Output:
+id	trans_date	month_key
+101	2023-01-15	2023-01
+103	2023-02-10	2023-02
+
+✅ You can now GROUP BY month_key like '2023-02'.
+🎯 Step 3: Real-Life Business Queries using Date Extraction
+✅ Query 1: Monthly Transaction Count & Amount (by country)
+
+SELECT 
+    DATE_FORMAT(trans_date, '%Y-%m') AS month,
+    country,
+    COUNT(*) AS trans_count,
+    SUM(amount) AS total_amount
+FROM Transactions
+GROUP BY month, country
+ORDER BY month, country;
+
+📤 Output:
+month	country	trans_count	total_amount
+2023-01	US	2	1500
+2023-02	IN	2	7000
+2023-03	DE	2	1600
+2023-03	IN	1	1000
+2023-04	US	1	1200
+
+✅ Zomato or Razorpay would use this for monthly performance dashboards.
+✅ Query 2: Monthly Approved vs Total Transactions
+
+SELECT 
+    DATE_FORMAT(trans_date, '%Y-%m') AS month,
+    country,
+    COUNT(*) AS trans_count,
+    SUM(CASE WHEN state = 'approved' THEN 1 ELSE 0 END) AS approved_count,
+    SUM(amount) AS trans_total_amount,
+    SUM(CASE WHEN state = 'approved' THEN amount ELSE 0 END) AS approved_total_amount
+FROM Transactions
+GROUP BY month, country;
+
+📤 Output:
+month	country	trans_count	approved_count	trans_total_amount	approved_total_amount
+2023-02	IN	2	2	7000	7000
+2023-03	DE	2	1	1600	700
+2023-04	US	1	1	1200	1200
+
+✅ This tells you success rate of transactions month-wise.
+🔥 Step 4: More DATE_FORMAT() Patterns
+
+-- Full date in "Day Month Year"
+SELECT DATE_FORMAT(trans_date, '%d %M %Y') FROM Transactions;
+
+-- Output: "01 April 2023"
+
+Format	Output	Meaning
+%Y	2023	4-digit year
+%m	04	Month (2-digit)
+%M	April	Month name
+%d	01	Day of month
+%b	Apr	Abbreviated month
+%a	Wed	Abbreviated weekday
+%W	Wednesday	Full weekday
+%e	1	Day of month (no leading 0)
+🧪 Step 5: Date Filtering
+✅ Filter by Year
+
+SELECT * FROM Transactions
+WHERE YEAR(trans_date) = 2023;
+
+✅ Filter by Month-Year (e.g. March 2023)
+
+SELECT * FROM Transactions
+WHERE DATE_FORMAT(trans_date, '%Y-%m') = '2023-03';
+
+✅ This works like filtering in Excel for all March 2023 rows!
+🔍 Summary: Date Function Reference Table
+Task	SQL Expression	Notes
+Get year	YEAR(date)	2023
+Get month	MONTH(date)	3
+Get day	DAY(date)	12
+Format YYYY-MM	DATE_FORMAT(date, '%Y-%m')	'2023-03'
+Format DD Month YYYY	DATE_FORMAT(date, '%d %M %Y')	'12 March 2023'
+Group by month	Use DATE_FORMAT(..., '%Y-%m')	For reports
+✅ Final Pro SQL Tip:
+
+To group year and month as separate columns, do this:
+
+SELECT 
+    YEAR(trans_date) AS year,
+    MONTH(trans_date) AS month,
+    COUNT(*) AS txn_count
+FROM Transactions
+GROUP BY year, month;
+
+✅ Good for pivot tables and bar charts in BI tools like Power BI or Tableau.
