@@ -1,0 +1,111 @@
+🧠 WHAT ARE THEY?
+Function	What it Does
+COUNT(expr)	Counts how many non-NULL values are present
+SUM(expr)	Adds up (sums) numerical values, including 0
+🧩 BASIC DIFFERENCE
+Feature	COUNT	SUM
+Purpose	Count how many rows match	Add the values of a column
+Works on	Any column or expression	Numeric columns only
+Ignores NULLs	✅ Yes	✅ Yes
+Counts 0 values?	✅ Yes (0 is not NULL)	✅ Yes (adds 0)
+Default Aggregation	Number of items	Total of numeric values
+📘 SIMPLE EXAMPLES
+
+Assume a table called Orders:
+order_id	amount	status
+1	100	approved
+2	200	declined
+3	NULL	approved
+4	0	declined
+5	300	approved
+Example 1: Counting rows
+
+SELECT COUNT(amount) AS total_count FROM Orders;
+-- Output: 4
+-- NULL is ignored
+
+SELECT COUNT(*) AS total_rows FROM Orders;
+-- Output: 5
+-- Counts all rows, even NULLs
+
+Example 2: Summing values
+
+SELECT SUM(amount) AS total_amount FROM Orders;
+-- Output: 600 (100 + 200 + 0 + 300) → NULL ignored
+
+🎯 WHEN TO USE WHAT?
+Use Case	Use COUNT()	Use SUM()
+How many orders placed?	✅	❌
+What is total revenue?	❌	✅
+How many approved orders?	✅ With CASE	❌ Use only if you want to total 1s
+How many users failed login?	✅ With filter	❌
+Total number of items sold	❌	✅
+🧪 ADVANCED EXAMPLES WITH CASE
+✅ Using COUNT with condition:
+
+Count only approved orders:
+
+SELECT COUNT(CASE WHEN status = 'approved' THEN 1 END) AS approved_count
+FROM Orders;
+-- Output: 3 (orders 1, 3, 5)
+
+✅ Using SUM with condition:
+
+Count approved using SUM:
+
+SELECT SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) AS approved_count
+FROM Orders;
+-- Output: 3
+
+    Both approaches are valid. Use whichever is easier to understand.
+
+📦 Real-World Example
+
+Imagine you're analyzing employee timesheets:
+emp_id	hours_worked
+1	8
+2	7
+3	NULL
+4	0
+5	9
+Use COUNT(hours_worked):
+
+-- How many employees logged hours?
+SELECT COUNT(hours_worked) FROM timesheets;
+-- Output: 4 (ignores NULL)
+
+Use SUM(hours_worked):
+
+-- What is the total hours worked?
+SELECT SUM(hours_worked) FROM timesheets;
+-- Output: 24 (8 + 7 + 0 + 9)
+
+📌 KEY THINGS TO REMEMBER
+
+    COUNT(*) counts all rows, including NULLs.
+
+    COUNT(column) counts non-NULL values in that column.
+
+    SUM(column) adds up numbers, ignores NULLs, includes 0.
+
+    SUM(CASE WHEN...) is great for counting with logic (acts like a conditional counter).
+
+    Don’t use COUNT(CASE... ELSE 0) — it counts everything (even 0s).
+
+✅ QUICK RECAP TABLE
+Example	COUNT() Result	SUM() Result
+0	✅ Counted	✅ Added
+NULL	❌ Not Counted	❌ Ignored
+5	✅ Counted	✅ Added (5)
+CASE... THEN 1 ELSE 0	All rows counted	Adds up only 1s
+🧠 Final Tip for Interviews
+
+    🗣 “I use COUNT(CASE WHEN condition THEN 1 END) when I want to count how many rows meet a condition, and SUM(CASE WHEN condition THEN 1 ELSE 0 END) when I want to build logic into numeric totals.”
+
+Would you like me to generate:
+
+✅ A practice SQL sheet with SUM vs COUNT
+✅ Visual diagram (infographic-style)
+✅ Flashcards with common interview patterns
+
+Let me know, bro, I got you 💪
