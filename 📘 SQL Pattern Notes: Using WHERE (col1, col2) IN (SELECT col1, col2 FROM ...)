@@ -1,0 +1,93 @@
+📘 SQL Pattern Notes: Using WHERE (col1, col2) IN (SELECT col1, col2 FROM ...)
+🔶 What is This Pattern?
+
+This pattern is used to filter rows based on a combination of multiple columns, not just one.
+✅ Syntax:
+
+SELECT *
+FROM table_name
+WHERE (col1, col2) IN (
+    SELECT col1, col2
+    FROM another_table
+);
+
+🎯 Why Use This?
+
+Normally, IN is used with a single column:
+
+WHERE column IN (val1, val2, ...)
+
+But when you want to match pairs (or even triples) of columns — for example: (customer_id, order_date) — you use tuple comparison with IN.
+✅ Use Case Example: First Order of Each Customer
+Delivery Table:
+delivery_id	customer_id	order_date	customer_pref_delivery_date
+1	1	2019-08-01	2019-08-02
+2	2	2019-08-02	2019-08-02
+3	1	2019-08-11	2019-08-12
+Goal:
+
+Get full row of first order for each customer.
+🔹 Step 1: Subquery to get (customer_id, MIN(order_date))
+
+SELECT customer_id, MIN(order_date)
+FROM Delivery
+GROUP BY customer_id;
+
+This returns only the ID and earliest date, not the full row.
+🔹 Step 2: Use IN to fetch full row
+
+SELECT *
+FROM Delivery
+WHERE (customer_id, order_date) IN (
+    SELECT customer_id, MIN(order_date)
+    FROM Delivery
+    GROUP BY customer_id
+);
+
+✅ This filters rows where the combination of (customer_id, order_date) matches the subquery.
+✅ Now you get all columns, like delivery_id, customer_pref_delivery_date, etc.
+✅ Visual Explanation
+
+Think of it like matching pairs:
+
+(customer_id = 1 AND order_date = '2019-08-01')
+OR
+(customer_id = 2 AND order_date = '2019-08-02')
+...
+
+The IN with tuple is a shorthand for writing many OR conditions together.
+📌 When to Use This
+Situation	Use this pattern?
+Want to filter by multiple columns?	✅ Yes
+Want to avoid JOINs or CTEs for simple filters?	✅ Yes
+Subquery gives limited columns, and you want full rows?	✅ Yes
+⚠️ Notes & Limitations
+
+    ✅ Supported in MySQL, PostgreSQL, and most modern SQL engines.
+
+    ⚠️ Not supported in some old databases (like SQL Server 2012 and earlier).
+
+    ⚠️ Works best when the number of columns in IN clause matches exactly.
+
+🧠 Similar Alternatives (JOIN version)
+
+You could also write the same using a JOIN:
+
+SELECT D.*
+FROM Delivery D
+JOIN (
+    SELECT customer_id, MIN(order_date) AS first_date
+    FROM Delivery
+    GROUP BY customer_id
+) AS FirstOrders
+ON D.customer_id = FirstOrders.customer_id
+AND D.order_date = FirstOrders.first_date;
+
+This gives the same result — but is longer and sometimes harder to read.
+📝 Summary
+Feature	Value
+📌 Pattern	WHERE (col1, col2) IN (SELECT col1, col2 FROM ...)
+🎯 Use Case	Filtering rows by combinations (tuples)
+✅ Benefit	Simpler than JOINs for basic filtering
+💡 Tip	Use it when subquery gives identifiers, but you need full rows
+⚠️ Warning	Not supported in very old SQL engines
